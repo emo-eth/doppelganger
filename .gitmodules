@@ -1,0 +1,11 @@
+[submodule "lib/forge-std"]
+	path = lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+	branch = v1.2.0
+[submodule "lib/create2-helpers"]
+	path = lib/create2-helpers
+	url = https://github.com/emo-eth/create2-helpers
+	branch = v0.1.3
+[submodule "lib/huffmate"]
+	path = lib/huffmate
+	url = https://github.com/pentagonxyz/huffmate

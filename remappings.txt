@@ -1,2 +1,8 @@
+create2-helpers/=lib/create2-helpers/src/
 ds-test/=lib/forge-std/lib/ds-test/src/
 forge-std/=lib/forge-std/src/
+foundry-huff/=lib/huffmate/lib/foundry-huff/src/
+huffmate/=lib/huffmate/src/
+openzeppelin-contracts/=lib/create2-helpers/lib/openzeppelin-contracts/
+solmate/=lib/huffmate/lib/solmate/src/
+stringutils/=lib/huffmate/lib/foundry-huff/lib/solidity-stringutils/
