@@ -1,0 +1,15 @@
+/// @title util
+/// @author emo.eth
+/// @notice util functions
+
+/// @notice Pushes 0 onto the stack using RETURNDATASIZE
+///         Note: assumes that returndata buffer is empty
+#define macro RPUSH0() = takes (0) returns (1) {
+    returndatasize
+}
+
+/// @notice Pushes 0 onto the stack using CALLDATSSIZE
+///         Note: assumes that calldata buffer is empty
+#define macro CPUSH0() = takes (0) returns (1) {
+    calldatasize
+}

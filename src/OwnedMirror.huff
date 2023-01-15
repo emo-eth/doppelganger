@@ -1,0 +1,105 @@
+/// @title OwnedMirror
+/// @author emo.eth <https://github.com/jameswenzel>
+/// @notice This contract includes a fallback function that returns the 
+///         bytecode of a target contract, configurable by the owner
+
+// imports
+#include "huffmate/src/auth/Owned.huff"
+#include "huffmate/src/utils/Address.huff"
+#include "./util.huff"
+
+#define constant MIRRORED = FREE_STORAGE_POINTER()
+#define constant ONE_WORD = 0x20
+#define constant RUNTIME_OFFSET = 0x20
+
+#define function getMirrored() view returns (address)
+#define function setMirrored(address) payable returns()
+
+#define macro CONSTRUCTOR() = takes(0) returns(0) {
+    // initialize the owner
+    OWNED_CONSTRUCTOR()
+
+    // initialize the MIRRORED var
+
+    // 0x20 codesize sub 
+    [RUNTIME_OFFSET]  // [RUNTIME_OFFSET]
+    dup1              // [RUNTIME_OFFSET, RUNTIME_OFFSET]
+    0x40 codesize sub // [mirrored_offset, RUNTIME_OFFSET, RUNTIME_OFFSET]
+
+    [ONE_WORD]        // [0x20, mirrored_offset, RUNTIME_OFFSET, RUNTIME_OFFSET]
+    dup2              // [mirrored_offset, 0x20, mirrored_offset, RUNTIME_OFFSET,RUNTIME_OFFSET]
+    0x00 codecopy     // [mirrored_offset, RUNTIME_OFFSET, RUNTIME_OFFSET]
+    CPUSH0() mload    // [mirrored, mirrored_offset, RUNTIME_OFFSET, RUNTIME_OFFSET]
+    [MIRRORED] sstore // [mirrored_offset, RUNTIME_OFFSET, RUNTIME_OFFSET]
+    sub               // [length, RUNTIME_OFFSET]
+    dup1              // [length, length,RUNTIME_OFFSET]
+    swap2             // [RUNTIME_OFFSET, length,length]
+    0x00              // [0x00, RUNTIME_OFFSET, length,length]
+    codecopy          // [length]
+    CPUSH0()          // [0x00, length]
+    return 
+}
+
+#define macro SET_MIRRORED() = takes (0) returns (0) {
+    // load first word after selector from calldata onto stack
+    0x04 calldataload   // [value]
+    // require that it is an address (REQUIRE_ADDR consumes the value; dup it)
+    dup1 REQUIRE_ADDR() // [value]
+    // sstore(MIRRORED, value)
+    [MIRRORED] sstore   // []
+    // return(0, 0)
+    RPUSH0() RPUSH0() return
+}
+
+#define macro GET_MIRRORED() = takes (0) returns (0) {
+    [MIRRORED] sload // [mirrored]
+    RPUSH0()         // [0x00, mirrored]
+    // mstore(0x00, mirrored)
+    mstore           // []
+    // return(0, 0x20)
+    0x20 RPUSH0() return 
+}
+
+#define macro MIRROR() = takes(0) returns(0) {
+    [MIRRORED] sload // [MIRRORED]
+    dup1             // [MIRRORED, MIRRORED]
+    extcodesize      // [size, MIRRORED]
+    RPUSH0()         // [0x00, size, mirrored]
+    RPUSH0()         // [0x00, 0x00, size, mirrored]
+    dup3             // [size, 0x00, 0x00, size, mirrored]
+    swap4            // [mirrored, 0x00, 0x00, size, size]
+    extcodecopy      // [size]
+    RPUSH0()         // [0x00, size]
+    // return(0x00, extcodesize(mirrored))
+    return
+}
+
+#define macro OWNED_MIRROR_MAIN() = takes(1) returns (1) {
+    // input stack: [function_selector]
+	dup1 __FUNC_SIG(getMirrored) eq getMirrored jumpi
+	dup1 __FUNC_SIG(setMirrored) eq setMirrored jumpi
+    no_match jump
+
+	getMirrored:
+		GET_MIRRORED()
+	setMirrored:
+		SET_MIRRORED()
+    
+    // bubble up if no match
+    no_match:
+}
+
+#define macro MAIN() = takes(0) returns(0) {
+    // if no calldata is provided, return mirrored contract bytecode
+    calldatasize RPUSH0() eq mirror jumpi
+    // put function selector onto stack
+    0x00 calldataload 0xE0 shr // [function_selector]
+
+    OWNED_MIRROR_MAIN()        // [function_selector]
+    OWNED_MAIN()               // [function_selector]
+    RPUSH0() RPUSH0() revert    // [function_selector]
+
+    mirror:
+        MIRROR()
+}
+

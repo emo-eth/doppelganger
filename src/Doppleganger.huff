@@ -1,0 +1,49 @@
+/// @title Doppelganger
+/// @notice SPDX-License-Identifier: MIT
+/// @author emo.eth <https://github.com/jameswenzel>
+
+#include './util.huff'
+
+#define constant CONSTRUCTOR_ARGS_OFFSET = 0x21 // bytes offset of initcode to copy constructor args
+#define constant CONSTRUCTOR_ARGS_SIZE = 0x14 // 20 bytes - a packed address
+
+#define macro CONSTRUCTOR() = takes (0) returns (0) {
+    [CONSTRUCTOR_ARGS_SIZE]    // [SIZE]
+    [CONSTRUCTOR_ARGS_OFFSET]  // [OFFSET, SIZE]
+    // constructor arg is an unpadded address
+    // 0x0c is dest offset so the address can be loaded directly from 0x00
+    0x0C                       // [0x0C, OFFSET, SIZE]
+    // copy constructor arg to memory
+    codecopy                   // [] 
+    // load nothing from returndata initially since size is unknown
+    CPUSH0()                   // [0x00]
+    CPUSH0()                   // [0x00, 0x00]
+    // no calldata - assume there is a fall back fn
+    CPUSH0()                   // [0x00, 0x00, 0x00]
+    CPUSH0()                   // [0x00, 0x00, 0x00, 0x00]
+    // load addr to copy from first word of mem
+    CPUSH0() mload             // [addr, 0x00, 0x00, 0x00, 0x00]
+    // forward all gas
+    gas                        // [gas, addr, 0x00, 0x00, 0x00, 0x00]
+    staticcall                 // [success]
+    CPUSH0()                   // [0x00, success]
+    returndatasize             // [returndatasize, 0x00, success]
+    // check if returndatasize > 0
+    // if 0 bytes are returned, no contract will be deployed
+    gt and                     // [cond]
+    // copy returndata (if any) to memory, starting at 0x00
+    returndatasize             // [returndatasize, cond]
+    CPUSH0()                   // [0x00, returndatasize, cond]
+    CPUSH0()                   // [0x00, 0x00, returndatasize, cond]
+    returndatacopy             // [cond]
+    // put mem offset start and length (returndatasize) onto stack
+    // they will be used to return runtime bytecode or revert with data, if any
+    CPUSH0()                   // [0x00, cond]
+    returndatasize             // [returndatasize, 0x00, cond]
+    swap2                      // [cond, 0x00, returndatasize]
+    __StaticCall_Success jumpi // [0x00, returndatasize]
+    // revert with any returndata
+    revert                     // []
+    __StaticCall_Success:    
+    return                     // []
+}
