@@ -78,13 +78,13 @@
 
 #define macro OWNED_MIRROR_MAIN() = takes(1) returns (1) {
     // input stack: [function_selector]
-    dup1 __FUNC_SIG(getMirrored) eq getMirrored jumpi
-    dup1 __FUNC_SIG(setMirrored) eq setMirrored jumpi
+    dup1 __FUNC_SIG(getMirrored) eq get_mirrored jumpi
+    dup1 __FUNC_SIG(setMirrored) eq set_mirrored jumpi
     no_match jump
 
-    getMirrored:
+    get_mirrored:
         GET_MIRRORED()
-    setMirrored:
+    set_mirrored:
         SET_MIRRORED()
     
     // bubble up if no match
