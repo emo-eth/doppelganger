@@ -37,8 +37,8 @@
     staticcall                 // [success]
     CPUSH0()                   // [0x00, success]
     returndatasize             // [returndatasize, 0x00, success]
-    // check if returndatasize > 0
     // if 0 bytes are returned, no contract will be deployed
+    // check if returndatasize > 0, but don't revert yet to avoid branching
     gt and                     // [cond]
     // copy returndata (if any) to memory, starting at 0x00
     returndatasize             // [returndatasize, cond]
@@ -51,8 +51,10 @@
     returndatasize             // [returndatasize, 0x00, cond]
     swap2                      // [cond, 0x00, returndatasize]
     __StaticCall_Success jumpi // [0x00, returndatasize]
-    // revert with any returndata
-    revert                     // []
+        // revert with any returndata
+        // revert(0, returndatasize)
+        revert                 
     __StaticCall_Success:    
-    return                     // []
+        // return(0, returndatasize)
+        return                 
 }

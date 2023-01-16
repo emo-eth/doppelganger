@@ -11,8 +11,8 @@
 
 #define constant MIRRORED = FREE_STORAGE_POINTER()
 #define constant ONE_WORD = 0x20
-#define constant RUNTIME_OFFSET = 0x50
-#define constant CONSTRUCTOR_ARG_OFFSET = 0x133
+#define constant RUNTIME_OFFSET = 0x4e
+#define constant CONSTRUCTOR_ARG_OFFSET = 0x130
 
 #define function getMirrored() view returns (address)
 #define function setMirrored(address) payable returns()
@@ -27,7 +27,7 @@
     [ONE_WORD]               // [0x20, CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
     // copy a single word from code to 0x00 in memory
     dup2                     // [CONSTRUCTOR_ARG_OFFSET, 0x20, CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET,RUNTIME_OFFSET]
-    0x00 codecopy            // [CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
+    CPUSH0() codecopy        // [CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
     // load address from memory and store it in MIRRORED slot
     CPUSH0() mload           // [mirrored, CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
     [MIRRORED] sstore        // [CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
@@ -35,7 +35,7 @@
     dup1                     // [length, length, RUNTIME_OFFSET]
     swap2                    // [RUNTIME_OFFSET, length, length]
     // copy body of runtime code to memory starting at 0x00
-    0x00 codecopy            // [length]
+    CPUSH0() codecopy        // [length]
     // return(0x00, length)
     CPUSH0() return          // [0x00, length]
 }
@@ -59,7 +59,7 @@
     // mstore(0x00, mirrored)
     mstore           // []
     // return(0, 0x20)
-    0x20 RPUSH0() return 
+    [ONE_WORD] RPUSH0() return 
 }
 
 #define macro MIRROR() = takes(0) returns(0) {
@@ -95,12 +95,12 @@
     // if no calldata is provided, return mirrored contract bytecode
     calldatasize RPUSH0() eq mirror jumpi
     // put function selector onto stack
-    0x00 calldataload 0xE0 shr // [function_selector]
+    RPUSH0() calldataload 0xE0 shr // [function_selector]
 
-    OWNED_MIRROR_MAIN()        // [function_selector]
-    OWNED_MAIN()               // [function_selector]
+    OWNED_MIRROR_MAIN()            // [function_selector]
+    OWNED_MAIN()                   // [function_selector]
     // revert(0, 0)
-    RPUSH0() RPUSH0() revert   // [function_selector]
+    RPUSH0() RPUSH0() revert       // [function_selector]
 
     mirror:
         MIRROR()
