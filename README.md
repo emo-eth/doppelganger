@@ -30,7 +30,7 @@ OwnedMirror is an `Ownable` smart contract that contains a storage variable `MIR
 
 Its constructor takes two abi-encoded addresses; the first is the initial value for `MIRRORED`, and the second is the address of the initial owner.
 
-When called with no calldata, `OwnedMirror` will return the bytecode of the account `MIRRORED` (which may be 0).
+When called with no calldata, `OwnedMirror` will return the bytecode of the account `MIRRORED` (which may be length-0).
 
 It is possible to deterministically deploy an `OwnedMirror` contract to the same address on multiple networks by using the same `salt`, `initialMirrored`, and `initialOwner`, but, crucially, the storage variables may be updated independently on each network.
 
