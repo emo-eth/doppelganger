@@ -1,10 +1,10 @@
 /// @title OwnedMirror
 /// @notice SPDX-License-Identifier: MIT
 /// @author emo.eth <https://github.com/jameswenzel>
-/// @notice This contract includes a fallback function that returns the 
-///         bytecode of a target contract, configurable by the owner
+/// @notice This contract includes a "fallback function" that returns the 
+///         bytecode of the address stored in the MIRRORED slot, which is
+///         configurable by the owner.
 
-// imports
 #include "huffmate/src/auth/Owned.huff"
 #include "huffmate/src/utils/Address.huff"
 #include "./util.huff"

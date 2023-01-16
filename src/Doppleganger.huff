@@ -1,6 +1,11 @@
 /// @title Doppelganger
 /// @notice SPDX-License-Identifier: MIT
 /// @author emo.eth <https://github.com/jameswenzel>
+/// @notice This smart contract attempts to call the "fallback function" at an
+///         address packed into the last 20 bytes of its creation bytecode,
+///         and will copy the resulting bytes as its own runtime bytecode, or
+///         revert if the call fails or nothing is returned. This allows for
+///         arbitrary runtime bytecode from fixed creation bytecode.
 
 #include './util.huff'
 
