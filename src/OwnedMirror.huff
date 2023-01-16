@@ -11,7 +11,8 @@
 
 #define constant MIRRORED = FREE_STORAGE_POINTER()
 #define constant ONE_WORD = 0x20
-#define constant RUNTIME_OFFSET = 0x51
+#define constant RUNTIME_OFFSET = 0x50
+#define constant CONSTRUCTOR_ARG_OFFSET = 0x133
 
 #define function getMirrored() view returns (address)
 #define function setMirrored(address) payable returns()
@@ -20,24 +21,23 @@
     // initialize the owner
     OWNED_CONSTRUCTOR()
 
-    // initialize the MIRRORED var
-
-    // 0x20 codesize sub 
-    [RUNTIME_OFFSET] dup1  // [RUNTIME_OFFSET, RUNTIME_OFFSET]
-    0x40 codesize sub      // [mirrored_offset, RUNTIME_OFFSET, RUNTIME_OFFSET]
-
-    [ONE_WORD]             // [0x20, mirrored_offset, RUNTIME_OFFSET, RUNTIME_OFFSET]
-    dup2                   // [mirrored_offset, 0x20, mirrored_offset, RUNTIME_OFFSET,RUNTIME_OFFSET]
-    0x00 codecopy          // [mirrored_offset, RUNTIME_OFFSET, RUNTIME_OFFSET]
-    CPUSH0() mload         // [mirrored, mirrored_offset, RUNTIME_OFFSET, RUNTIME_OFFSET]
-    [MIRRORED] sstore      // [mirrored_offset, RUNTIME_OFFSET, RUNTIME_OFFSET]
-    sub                    // [length, RUNTIME_OFFSET]
-    dup1                   // [length, length,RUNTIME_OFFSET]
-    swap2                  // [RUNTIME_OFFSET, length,length]
-    0x00                   // [0x00, RUNTIME_OFFSET, length,length]
-    codecopy               // [length]
-    CPUSH0()               // [0x00, length]
-    return 
+    // initialize the MIRRORED storage var
+    [RUNTIME_OFFSET] dup1    // [RUNTIME_OFFSET, RUNTIME_OFFSET]
+    [CONSTRUCTOR_ARG_OFFSET] // [CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
+    [ONE_WORD]               // [0x20, CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
+    // copy a single word from code to 0x00 in memory
+    dup2                     // [CONSTRUCTOR_ARG_OFFSET, 0x20, CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET,RUNTIME_OFFSET]
+    0x00 codecopy            // [CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
+    // load address from memory and store it in MIRRORED slot
+    CPUSH0() mload           // [mirrored, CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
+    [MIRRORED] sstore        // [CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
+    sub                      // [length, RUNTIME_OFFSET]
+    dup1                     // [length, length, RUNTIME_OFFSET]
+    swap2                    // [RUNTIME_OFFSET, length, length]
+    // copy body of runtime code to memory starting at 0x00
+    0x00 codecopy            // [length]
+    // return(0x00, length)
+    CPUSH0() return          // [0x00, length]
 }
 
 #define macro SET_MIRRORED() = takes (0) returns (0) {
@@ -99,6 +99,7 @@
 
     OWNED_MIRROR_MAIN()        // [function_selector]
     OWNED_MAIN()               // [function_selector]
+    // revert(0, 0)
     RPUSH0() RPUSH0() revert   // [function_selector]
 
     mirror:
