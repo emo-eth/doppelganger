@@ -11,8 +11,9 @@
 
 #define constant MIRRORED = FREE_STORAGE_POINTER()
 #define constant ONE_WORD = 0x20
-#define constant RUNTIME_OFFSET = 0x4e
-#define constant CONSTRUCTOR_ARG_OFFSET = 0x130
+#define constant RUNTIME_OFFSET = 0x4c
+#define constant RUNTIME_SIZE = 0xe2
+#define constant CONSTRUCTOR_ARG_OFFSET = 0x12e
 
 #define function getMirrored() view returns (address)
 #define function setMirrored(address) payable returns()
@@ -22,22 +23,20 @@
     OWNED_CONSTRUCTOR()
 
     // initialize the MIRRORED storage var
-    [RUNTIME_OFFSET] dup1    // [RUNTIME_OFFSET, RUNTIME_OFFSET]
-    [CONSTRUCTOR_ARG_OFFSET] // [CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
-    [ONE_WORD]               // [0x20, CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
+
     // copy a single word from code to 0x00 in memory
-    dup2                     // [CONSTRUCTOR_ARG_OFFSET, 0x20, CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET,RUNTIME_OFFSET]
-    CPUSH0() codecopy        // [CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
+    [ONE_WORD]               // [0x20]
+    [CONSTRUCTOR_ARG_OFFSET] // [CONSTRUCTOR_ARG_OFFSET, 0x20]
+    CPUSH0() codecopy        // []
     // load address from memory and store it in MIRRORED slot
-    CPUSH0() mload           // [mirrored, CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
-    [MIRRORED] sstore        // [CONSTRUCTOR_ARG_OFFSET, RUNTIME_OFFSET, RUNTIME_OFFSET]
-    sub                      // [length, RUNTIME_OFFSET]
-    dup1                     // [length, length, RUNTIME_OFFSET]
-    swap2                    // [RUNTIME_OFFSET, length, length]
+    CPUSH0() mload           // [mirrored]
+    [MIRRORED] sstore        // []
+    [RUNTIME_SIZE] dup1      // [RUNTIME_SIZE, RUNTIME_SIZE]
+    [RUNTIME_OFFSET]         // [RUNTIME_OFFSET, RUNTIME_SIZE, RUNTIME_SIZE]
     // copy body of runtime code to memory starting at 0x00
-    CPUSH0() codecopy        // [length]
-    // return(0x00, length)
-    CPUSH0() return          // [0x00, length]
+    CPUSH0() codecopy        // [RUNTIME_SIZE]
+    // return(0x00, RUNTIME_SIZE)
+    CPUSH0() return       
 }
 
 #define macro SET_MIRRORED() = takes (0) returns (0) {
