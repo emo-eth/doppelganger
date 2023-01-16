@@ -1,6 +1,12 @@
 # Doppleganger
 
+<img src="https://user-images.githubusercontent.com/6371847/212580006-235acf82-0b59-4f67-9b07-8757470085a7.png" alt="Not To Be Reproduced (La reproduction interdite) - René Magritte" width=300 />
+
+*Not To Be Reproduced (La reproduction interdite) - René Magritte*
+
 Doppleganger is a proof-of-concept set of Huff smart contracts that allow for deploying arbitrary code to the same address on multiple networks using CREATE2 – inspired by [Metamorphic smart contracts](https://github.com/0age/metamorphic), but without the ability to change the code after deployment, and (hopefully) hyper-optimized for this specific use cases.
+
+
 
 ## OwnedMirror.huff
 
