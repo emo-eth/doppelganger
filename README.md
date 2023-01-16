@@ -26,7 +26,7 @@ interface IOwnedMirror {
 
 OwnedMirror is an `Ownable` smart contract that contains a storage variable `MIRRORED`, which is accessed and set via the via the standard methods `getMirrored()` and `setMirrored(address)`, the latter of which is restricted to the owner of the smart contract. 
 
-Its constructor takes two abi-encoded addresses; the first is the initial value for `MIRRORED`, and the second is the address of the initial owner.
+Its constructor takes two abi-encoded addresses; the first is the initial address of `MIRRORED`, and the second is the address of the initial owner.
 
 When called with no calldata, `OwnedMirror` will return the bytecode of the account `MIRRORED` (which may be length-0).
 
