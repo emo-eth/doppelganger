@@ -7,7 +7,7 @@ import { Hello } from "../test/helpers/Hello.sol";
 import { World } from "../test/helpers/World.sol";
 import { HuffConfig } from "foundry-huff/HuffConfig.sol";
 
-contract DeployDopplegangers is BaseCreate2Script {
+contract DeployDoppelgangers is BaseCreate2Script {
     function run() public {
         setUp();
         console2.log(vm.toString(deployer));
@@ -24,7 +24,7 @@ contract DeployDopplegangers is BaseCreate2Script {
         }
         IOwnedMirror mirror = IOwnedMirror(deployMirror());
         configureMirror(IOwnedMirror(mirror), bytecode);
-        deployDoppleganger(mirror);
+        deployDoppelganger(mirror);
         return address(0);
     }
 
@@ -44,12 +44,12 @@ contract DeployDopplegangers is BaseCreate2Script {
         mirror.setMirrored(created);
     }
 
-    function deployDoppleganger(IOwnedMirror mirror) internal returns (address) {
-        console2.log("deploying doppleganger");
+    function deployDoppelganger(IOwnedMirror mirror) internal returns (address) {
+        console2.log("deploying doppelganger");
         return _immutableCreate2IfNotDeployed(
             deployer,
             bytes32(uint256(1)),
-            (new HuffConfig()).with_args(abi.encodePacked(address(mirror))).creationCodeWithArgs("Doppleganger")
+            (new HuffConfig()).with_args(abi.encodePacked(address(mirror))).creationCodeWithArgs("Doppelganger")
         );
     }
 }

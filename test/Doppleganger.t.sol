@@ -6,7 +6,7 @@ import { IOwnedMirror } from "../src/interfaces/IOwnedMirror.sol";
 import { IEchoer } from "./helpers/IEchoer.sol";
 import { HuffDeployer } from "foundry-huff/HuffDeployer.sol";
 
-contract DopplegangerTest is BaseHuffTest {
+contract DoppelgangerTest is BaseHuffTest {
     IOwnedMirror mirror;
 
     error Address(address);
@@ -17,13 +17,13 @@ contract DopplegangerTest is BaseHuffTest {
     }
 
     function testDeploy() public {
-        address doppleganger = deployDoppleganger(address(mirror));
-        assertEq(doppleganger.code, address(hello).code);
-        assertEq(IEchoer(doppleganger).echo(), hello.echo());
+        address doppelganger = deployDoppelganger(address(mirror));
+        assertEq(doppelganger.code, address(hello).code);
+        assertEq(IEchoer(doppelganger).echo(), hello.echo());
         mirror.setMirrored(address(world));
-        doppleganger = deployDoppleganger(address(mirror));
-        assertEq(doppleganger.code, address(world).code);
-        assertEq(IEchoer(doppleganger).echo(), world.echo());
+        doppelganger = deployDoppelganger(address(mirror));
+        assertEq(doppelganger.code, address(world).code);
+        assertEq(IEchoer(doppelganger).echo(), world.echo());
     }
 
     function testCreate2SameAddress() public {
@@ -48,13 +48,13 @@ contract DopplegangerTest is BaseHuffTest {
     function create2Helper(IEchoer target) external {
         mirror.setMirrored(address(target));
 
-        bytes memory dopplegangerCreationCode = HuffDeployer.config().creationCode("Doppleganger"); //hex"60146021600c393636363636515afa363d11163d36363e363d9161001f57fd5bf3";
-        bytes memory initCode = abi.encodePacked(dopplegangerCreationCode, mirror);
+        bytes memory doppelgangerCreationCode = HuffDeployer.config().creationCode("Doppelganger"); //hex"60146021600c393636363636515afa363d11163d36363e363d9161001f57fd5bf3";
+        bytes memory initCode = abi.encodePacked(doppelgangerCreationCode, mirror);
 
-        address doppleganger;
+        address doppelganger;
         assembly {
-            doppleganger := create2(0, add(initCode, 0x20), mload(initCode), 0)
+            doppelganger := create2(0, add(initCode, 0x20), mload(initCode), 0)
         }
-        revert Address(doppleganger);
+        revert Address(doppelganger);
     }
 }

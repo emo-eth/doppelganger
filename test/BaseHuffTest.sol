@@ -17,8 +17,8 @@ contract BaseHuffTest is Test {
         world = IEchoer(new World());
     }
 
-    function deployDoppleganger(address mirror) internal returns (address) {
-        return HuffDeployer.config().with_args(abi.encodePacked(mirror)).deploy("Doppleganger");
+    function deployDoppelganger(address mirror) internal returns (address) {
+        return HuffDeployer.config().with_args(abi.encodePacked(mirror)).deploy("Doppelganger");
     }
 
     function deployOwnedMirror(address mirrored, address owner) internal returns (IOwnedMirror) {

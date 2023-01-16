@@ -1,10 +1,10 @@
-# Doppleganger
+# Doppelganger
 
 <img src="https://user-images.githubusercontent.com/6371847/212580006-235acf82-0b59-4f67-9b07-8757470085a7.png" alt="Not To Be Reproduced (La reproduction interdite) - René Magritte" width=300 />
 
 *Not To Be Reproduced (La reproduction interdite) - René Magritte*
 
-Doppleganger is a proof-of-concept set of Huff smart contracts that allow for deploying arbitrary code to the same address on multiple networks using CREATE2 – inspired by [Metamorphic smart contracts](https://github.com/0age/metamorphic), but without the ability to change the code after deployment, and (hopefully) hyper-optimized for this specific use case.
+Doppelganger is a proof-of-concept set of Huff smart contracts that allow for deploying arbitrary code to the same address on multiple networks using CREATE2 – inspired by [Metamorphic smart contracts](https://github.com/0age/metamorphic), but without the ability to change the code after deployment, and (hopefully) hyper-optimized for this specific use case.
 
 ## OwnedMirror.huff
 
@@ -32,11 +32,11 @@ When called with no calldata, `OwnedMirror` will return the bytecode of the acco
 
 It is possible to deterministically deploy an `OwnedMirror` contract to the same address on multiple networks by using the same `salt`, `initialMirrored`, and `initialOwner`, but, crucially, the storage variables may be updated independently on each network.
 
-## Doppleganger.huff
+## Doppelganger.huff
 
-During construction, `Doppleganger` reads the final 20-bytes of its initialization code and makes an empty `staticcall` to the equivalent address. Any bytes returned will become the `Doppleganger`'s runtime code. The constructor will revert if the call is unsuccessful or no bytes are returned.
+During construction, `Doppelganger` reads the final 20-bytes of its initialization code and makes an empty `staticcall` to the equivalent address. Any bytes returned will become the `Doppelganger`'s runtime code. The constructor will revert if the call is unsuccessful or no bytes are returned.
 
-This means that, in combination with an `OwnedMirror`, it's possible to deploy arbitrary bytecode to the same address on different chains using CREATE2. While not (currently?) possible to directly verify the contracts on, eg, Etherscan, if the original implementation contracts are verified, Etherscan will show the code used to verify the original implementaitons as the code for the `Doppleganger` contracts.
+This means that, in combination with an `OwnedMirror`, it's possible to deploy arbitrary bytecode to the same address on different chains using CREATE2. While not (currently?) possible to directly verify the contracts on, eg, Etherscan, if the original implementation contracts are verified, Etherscan will show the code used to verify the original implementaitons as the code for the `Doppelganger` contracts.
 
 # Examples
 
