@@ -2,7 +2,7 @@
 src = 'src'
 out = 'out'
 libs = ['lib']
-remappings = ['huffmate/=lib/huffmate/']
+remappings = ['huffmate/=lib/huffmate/', 'foundry-huff/=lib/foundry-huff/']
 
 [fmt]
 bracket_spacing = true

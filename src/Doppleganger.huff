@@ -7,6 +7,10 @@
 #define constant CONSTRUCTOR_ARGS_OFFSET = 0x21 // bytes offset of initcode to copy constructor args
 #define constant CONSTRUCTOR_ARGS_SIZE = 0x14 // 20 bytes - a packed address
 
+#define macro MAIN() = takes (0) returns (0) {
+
+}
+
 #define macro CONSTRUCTOR() = takes (0) returns (0) {
     [CONSTRUCTOR_ARGS_SIZE]    // [SIZE]
     [CONSTRUCTOR_ARGS_OFFSET]  // [OFFSET, SIZE]

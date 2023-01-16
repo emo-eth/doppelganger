@@ -1,6 +1,7 @@
 /// @title util
+/// @notice SPDX-License-Identifier: MIT
 /// @author emo.eth
-/// @notice util functions
+/// @notice smol util functions
 
 /// @notice Pushes 0 onto the stack using RETURNDATASIZE
 ///         Note: assumes that returndata buffer is empty
