@@ -48,7 +48,7 @@ contract DoppelgangerTest is BaseHuffTest {
     function create2Helper(IEchoer target) external {
         mirror.setMirrored(address(target));
 
-        bytes memory doppelgangerCreationCode = HuffDeployer.config().creationCode("Doppelganger"); //hex"60146021600c393636363636515afa363d11163d36363e363d9161001f57fd5bf3";
+        bytes memory doppelgangerCreationCode = HuffDeployer.config().creation_code("Doppelganger"); //hex"60146021600c393636363636515afa363d11163d36363e363d9161001f57fd5bf3";
         bytes memory initCode = abi.encodePacked(doppelgangerCreationCode, mirror);
 
         address doppelganger;

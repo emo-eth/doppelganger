@@ -33,7 +33,7 @@ contract DeployDoppelgangers is BaseCreate2Script {
         return _immutableCreate2IfNotDeployed(
             deployer,
             bytes32(0),
-            (new HuffConfig()).with_args(abi.encode(address(0), deployer)).creationCodeWithArgs("OwnedMirror")
+            (new HuffConfig()).with_args(abi.encode(address(0), deployer)).creation_code_with_args("OwnedMirror")
         );
     }
 
@@ -49,7 +49,7 @@ contract DeployDoppelgangers is BaseCreate2Script {
         return _immutableCreate2IfNotDeployed(
             deployer,
             bytes32(uint256(1)),
-            (new HuffConfig()).with_args(abi.encodePacked(address(mirror))).creationCodeWithArgs("Doppelganger")
+            (new HuffConfig()).with_args(abi.encodePacked(address(mirror))).creation_code_with_args("Doppelganger")
         );
     }
 }
